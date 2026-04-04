@@ -33,10 +33,15 @@ const PORT = process.env.PORT || 3000;
 const start = async () => {
   try {
     await sequelize.authenticate();
-   
+
     console.log('Database connected.');
-   
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+
+    if (process.env.NODE_ENV === 'development') {
+      await sequelize.sync({ alter: true });
+      console.log('Database altered for development.');
+    } else {
+      await sequelize.sync(); 
+    }
     console.log('Models synced.');
     await seedRoles();
     await seedAdminUser();
