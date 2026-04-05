@@ -69,8 +69,8 @@ const options = {
             amount: { type: 'string', example: '45000.0000' },
             type: { type: 'string', enum: ['income', 'expense'] },
             category: { type: 'string', example: 'salary' },
-            date: { type: 'string', format: 'date', example: '2025-06-01' },
-            description: { type: 'string', example: 'Monthly salary for June' },
+            date: { type: 'string', format: 'date', example: '2026-04-03' },
+            description: { type: 'string', example: 'Monthly salary for march' },
           },
         },
         Pagination: {
@@ -186,7 +186,7 @@ const options = {
                   example: {
                     success: true,
                     data: {
-                      users: [{ id: 'uuid', name: 'Rahul Sharma', email: 'rahul@company.com', role: 'Viewer', status: 'active', createdAt: '2025-01-15T10:30:00Z' }],
+                      users: [{ id: 'uuid', name: 'Rahul Sharma', email: 'rahul@company.com', role: 'Viewer', status: 'active', createdAt: '2026-04-03T10:30:00Z' }],
                       pagination: { total: 24, page: 1, limit: 10, totalPages: 3 },
                     },
                   },
@@ -269,8 +269,8 @@ const options = {
           parameters: [
             { in: 'query', name: 'type', schema: { type: 'string', enum: ['income', 'expense'] } },
             { in: 'query', name: 'category', schema: { type: 'string', example: 'food' } },
-            { in: 'query', name: 'startDate', schema: { type: 'string', format: 'date', example: '2025-06-01' } },
-            { in: 'query', name: 'endDate', schema: { type: 'string', format: 'date', example: '2025-06-30' } },
+            { in: 'query', name: 'startDate', schema: { type: 'string', format: 'date', example: '2026-04-01' } },
+            { in: 'query', name: 'endDate', schema: { type: 'string', format: 'date', example: '2026-03-30' } },
             { in: 'query', name: 'page', schema: { type: 'integer', default: 1 } },
             { in: 'query', name: 'limit', schema: { type: 'integer', default: 10, maximum: 100 } },
           ],
@@ -282,7 +282,7 @@ const options = {
                   example: {
                     success: true,
                     data: {
-                      records: [{ id: 'uuid', amount: '1200.0000', type: 'expense', category: 'food', date: '2025-06-05', description: 'Team lunch' }],
+                      records: [{ id: 'uuid', amount: '1200.0000', type: 'expense', category: 'food', date: '2026-04-01', description: 'Team lunch' }],
                       pagination: { total: 2, page: 1, limit: 10, totalPages: 1 },
                     },
                   },
@@ -307,8 +307,8 @@ const options = {
                     amount: { type: 'number', example: 45000.00 },
                     type: { type: 'string', enum: ['income', 'expense'] },
                     category: { type: 'string', example: 'salary' },
-                    date: { type: 'string', format: 'date', example: '2025-06-01' },
-                    description: { type: 'string', example: 'Monthly salary for June' },
+                    date: { type: 'string', format: 'date', example: '2026-04-01' },
+                    description: { type: 'string', example: 'Monthly salary for March' },
                   },
                 },
               },
@@ -322,7 +322,7 @@ const options = {
                   example: {
                     success: true,
                     message: 'Record created successfully',
-                    data: { id: 'uuid', amount: '45000.0000', type: 'income', category: 'salary', date: '2025-06-01', description: 'Monthly salary for June', createdBy: 'admin-uuid', createdAt: '2025-06-01T08:00:00Z' },
+                    data: { id: 'uuid', amount: '45000.0000', type: 'income', category: 'salary', date: '2026-02-10', description: 'Monthly salary for Febuary', createdBy: 'admin-uuid', createdAt: '2025-06-01T08:00:00Z' },
                   },
                 },
               },
@@ -361,7 +361,7 @@ const options = {
                   example: {
                     success: true,
                     message: 'Record updated successfully',
-                    data: { id: 'uuid', amount: '45500.0000', type: 'income', category: 'salary', date: '2025-06-01', description: 'Adjusted monthly salary', updatedBy: 'admin-uuid', updatedAt: '2025-06-02T10:15:00Z' },
+                    data: { id: 'uuid', amount: '45500.0000', type: 'income', category: 'salary', date: '2026-04-01', description: 'Adjusted monthly salary', updatedBy: 'admin-uuid', updatedAt: '2026-04-02T10:15:00Z' },
                   },
                 },
               },
@@ -389,7 +389,7 @@ const options = {
           tags: ['Dashboard'],
           summary: 'Financial summary — total income, expenses, net balance',
           parameters: [
-            { in: 'query', name: 'month', schema: { type: 'string', example: '2025-06' }, description: 'Filter by month (YYYY-MM). Omit for all-time.' },
+            { in: 'query', name: 'month', schema: { type: 'string', example: '2026-04' }, description: 'Filter by month (YYYY-MM). Omit for all-time.' },
           ],
           responses: {
             200: {
@@ -469,7 +469,7 @@ const options = {
                     success: true,
                     data: {
                       recent: [
-                        { id: 'uuid', amount: '1200.00', type: 'expense', category: 'food', description: 'Team lunch', date: '2025-06-18' },
+                        { id: 'uuid', amount: '1200.00', type: 'expense', category: 'food', description: 'Team lunch', date: '2026-03-28' },
                       ],
                     },
                   },

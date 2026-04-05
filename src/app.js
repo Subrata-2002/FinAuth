@@ -7,6 +7,7 @@ const swaggerSpec = require('./config/swagger');
 const { sequelize } = require('./models');
 const { globalErrorHandler } = require('./middleware/errorHandler');
 const { seedRoles, seedAdminUser } = require('./config/seed');
+const { loginRateLimiter, generalRateLimiter } = require('./middleware/rateLimitMiddleware');
 
 const app = express();
 
@@ -16,6 +17,10 @@ app.use(express.json());
 
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+app.use('/api/auth/login', loginRateLimiter);
+app.use('/api', generalRateLimiter);
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
