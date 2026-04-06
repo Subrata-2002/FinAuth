@@ -278,7 +278,7 @@ The API is deployed on Render:
 
 > Note: this runs on Render's free tier, so the instance spins down after inactivity. The first request after a cold start may take 30–50 seconds. Subsequent requests are normal speed.
 
-![Render Deployment](TABLES/render-deployment.png)
+![Render Deployment](./Img/render-deployment.png)
 
 ---
 
@@ -293,7 +293,7 @@ Two ways to access the Swagger UI:
 
 The Swagger UI covers all endpoints with request/response schemas and lets you authorize with a JWT token via the **Authorize** button (top right).
 
-![Swagger UI](TABLES/swagger-preview.png)
+![Swagger UI](./Img/swagger-preview.png)
 
 ---
 
