@@ -1,6 +1,6 @@
 # FinAuth — Financial Dashboard Backend
 
-A role-based REST API for tracking company finances. Built with Node.js, Express, PostgreSQL (Sequelize), and Upstash Redis.
+A role-based REST API for tracking company finances. Built with Node.js, Express.js, PostgreSQL (Sequelize), and Redis.
 
 ---
 ## 📌 Overview
@@ -22,7 +22,7 @@ A role-based REST API for tracking company finances. Built with Node.js, Express
 
 **Dashboard** — Summary, category breakdown, monthly trends, recent transactions
 
-**Rate Limiting** — Upstash Redis sliding window (5 req/15min for login, 100 req/min for API)
+**Rate Limiting** — Upstash Redis using sliding window (5 req/15min for login, 100 req/min for API)
 
 ---
 
@@ -34,38 +34,38 @@ A role-based REST API for tracking company finances. Built with Node.js, Express
 | Framework | Express 4 |
 | Database | PostgreSQL via Sequelize 6 |
 | Auth | JWT (jsonwebtoken) |
-| Rate Limiting | Upstash Redis (`@upstash/ratelimit`) |
+| Rate Limiting | Upstash Redis (cloud-based rate limiting) |
 | Validation | express-validator |
 | Password hashing | bcryptjs (cost 12) |
-| Financial math | big.js |
+| Financial math | big.js(no floating-point errors with money) |
 | API Docs | Swagger UI (`/api/docs`) |
 | Security | helmet, compression |
 
 ---
 
 ## Project Structure
-
+      If you open the project folder, here's what you'll find:
 ```
 src/
-├── app.js                    # Entry point — wires middleware, mounts routes, boots server
+├── app.js                    # The brain — starts the server, connects everything
 ├── config/
-│   ├── database.js           # Sequelize instance (supports DATABASE_URL or individual vars)
-│   ├── redis.js              # Upstash Redis client
-│   ├── seed.js               # Idempotent role + admin user seeding
-│   └── swagger.js            # Swagger spec config
+│   ├── database.js           # Sets up the PostgreSQL connection
+│   ├── redis.js              # Sets up the Redis connection for rate limiting
+│   ├── seed.js               # Auto-creates default roles and admin user
+│   └── swagger.js            # Generates the interactive API docs
 ├── models/
-│   ├── index.js              # Associations registered centrally
-│   ├── Role.js
-│   ├── User.js
-│   └── Transaction.js
-├── controllers/              # HTTP layer — reads input, calls service, shapes response
-├── services/                 # Business logic + all DB queries
-├── routes/                   # Path definitions + middleware chaining
+│   ├── index.js              # Links tables together
+│   ├── Role.js               # Permission definitions
+│   ├── User.js               # User accounts
+│   └── Transaction.js        # Individual transactions (income/expense)
+├── controllers/              # Reads incoming requests, calls business logic, sends responses
+├── services/                 # Where the actual business logic lives
+├── routes/                   # Maps URLs to controllers
 └── middleware/
-    ├── authMiddleware.js     # JWT verification + active status check
-    ├── rbacMiddleware.js     # Permission-based access control
-    ├── rateLimitMiddleware.js# Upstash sliding-window rate limiter factory
-    └── errorHandler.js       # Global error handler + express-validator helper
+    ├── authMiddleware.js     # Checks if login token is valid
+    ├── rbacMiddleware.js     # Checks if user has permission for this action
+    ├── rateLimitMiddleware.js# Blocks spam and abuse
+    └── errorHandler.js       # Catches and formats all errors nicely
 ```
 
 ---
@@ -74,7 +74,7 @@ src/
 
 | Role | What they can do |
 |---|---|
-| Viewer | Dashboard summary + recent transactions only |
+| Viewer | Can see all Dashboard details |
 | Analyst | Everything above + category breakdowns + monthly trends + read records |
 | Admin | Everything — create/read/edit/delete records, manage users, change roles |
 
@@ -82,15 +82,15 @@ Self-registration always produces a `Viewer`. The only Admin is seeded from `.en
 
 ---
 
-## Getting Started
+## Getting It Running Locally
 
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL running locally (or a `DATABASE_URL`)
-- An [Upstash Redis](https://console.upstash.com) database (free tier works)
+- Node.js version 18 or newer
+- PostgreSQL running on your machine (or a DATABASE_URL connection string)
+- Upstash Redis — a free cloud Redis database
 
-### 1. Clone and install
+### Step 1: Download and install
 
 ```bash
 git clone https://github.com/your-username/finauth.git
@@ -98,15 +98,16 @@ cd finauth
 npm install
 ```
 
-### 2. Configure environment
+### Step 2: Create your .env file
 
-Copy the example below into a `.env` file at the project root:
+At the root of the project, create a file called .env and paste this in (fill in the blanks):
 
 ```env
 NODE_ENV=development
 PORT=3000
 
-# PostgreSQL — use either DATABASE_URL or individual vars
+# Database setup — use either DATABASE_URL OR the individual vars below
+# If you have a cloud database URL, uncomment and use it instead
 # DATABASE_URL=postgresql://user:password@host/dbname
 DB_HOST=127.0.0.1
 DB_PORT=5432
@@ -118,11 +119,11 @@ DB_PASSWORD=postgres
 JWT_SECRET=change_this_to_a_long_random_string
 JWT_EXPIRES_IN=7d
 
-# Admin user seeded on first boot
+# The first admin account created automatically
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 
-# Upstash Redis — get these from console.upstash.com
+# Upstash Redis — get these from Upstash console
 UPSTASH_REDIS_REST_URL=https://your-instance.upstash.io
 UPSTASH_REDIS_REST_TOKEN=your_token_here
 
@@ -133,23 +134,24 @@ GENERAL_RATE_LIMIT_MAX=100
 GENERAL_RATE_LIMIT_WINDOW=1 m
 ```
 
-### 3. Run
+### Step 3: Start it up
 
 ```bash
 # Development (auto-restarts + schema auto-sync)
 npm run dev
 
-# Production
+# Production mode
 npm start
 ```
 
-On first boot the server will:
-1. Connect to PostgreSQL and sync all models
-2. Seed the three roles (`Admin`, `Analyst`, `Viewer`) if they don't exist
-3. Create the Admin user from `.env` if it doesn't exist
-4. Start listening on `PORT`
+When the server starts for the first time, it will automatically:
 
-No manual migration step needed.
+- Create the database tables
+- Add the three roles (Admin, Analyst, Viewer)
+- Create your admin account
+- Start listening for requests on port 3000
+
+No migration scripts needed—it just works.
 
 ---
 
@@ -157,7 +159,7 @@ No manual migration step needed.
 
 Base URL: `http://localhost:3000/api`
 
-All protected routes require:
+For protected endpoints, you need to include your login token in the header:
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -185,24 +187,17 @@ Every response follows this shape:
 | GET | `/dashboard/by-category` | Yes | Analyst, Admin |
 | GET | `/dashboard/trends` | Yes | Analyst, Admin |
 
-Full request/response examples for every endpoint including all error cases are in [`TABLES/api_reference.md`](TABLES/api_reference.md).
-
 ---
 
 ## Rate Limiting
 
-Backed by Upstash Redis using a sliding window algorithm. State persists across server restarts.
+It uses cloud-based Redis to prevent abuse. Here's how it works:
 
 | Route | Limit |
 |---|---|
 | `POST /api/auth/login` | 5 requests per 15 minutes |
 | All `/api/*` routes | 100 requests per minute |
 
-Every response includes:
-```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 99
-X-RateLimit-Reset: 1718000000000
 ```
 
 When the limit is exceeded:
@@ -214,58 +209,52 @@ When the limit is exceeded:
   "data": null
 }
 ```
-
-The middleware fails open — a Redis outage will not block traffic.
+The system is designed to fail gracefully—if Redis goes down, requests still go through (the rate limiting just won't work temporarily).
 
 ---
 
-## Database Schema
+## How the Database is Structured
 
-Three tables:
+Three main tables, all linked together:
 
 ```
 Roles (1) ──< Users (many) ──< Transactions (many)
 ```
 
-Key design decisions:
-- UUID primary keys everywhere — no sequential IDs that leak record counts
-- `amount` stored as `DECIMAL(19,4)` — avoids floating-point errors with money
-- Transactions are soft-deleted (`is_deleted = true`) — data is never lost, audit trail is preserved
-- `category` is a free-text field on `Transactions` — no separate category table needed
-- Role permissions stored as a JSON array on the `Roles` table
+Why this design?
 
-Full schema with column types, constraints, and an ERD is in [`TABLES/schema.md`](TABLES/schema.md).
+- UUIDs everywhere — No sequential IDs that could leak info about how many records exist
+- Decimal amounts — Money is stored as DECIMAL(19,4) to avoid floating-point math errors (the classic 0.1 + 0.2 ≠ 0.3 problem)
+- Soft deletes — When you delete a transaction, it's marked as deleted, not actually removed. This preserves an audit trail and prevents accidental data loss
+- Simple categories — Transactions have a free-text category field (like "Office Supplies" or "Food") instead of a whole separate table
+- Role permissions — Stored as JSON on each role, easy to update without a database migration
 
 ---
 
 ## Request Flow
 
 ```
-Incoming request
-      │
-      ▼
-helmet + compression
-      │
-      ▼
-Rate limiter (Upstash Redis)
-      │
-      ▼
-authMiddleware — verify JWT, load user, check status = active
-      │
-      ▼
-rbacMiddleware — check role permissions
-      │
-      ▼
-express-validator — validate input
-      │
-      ▼
-Controller → Service → Sequelize → PostgreSQL
-      │
-      ▼
-{ success, message, data }
-      │
-      ▼
-globalErrorHandler — catches anything thrown, formats consistently
+Request arrives
+    ↓
+Security headers (helmet) + compression
+    ↓
+Rate limiter checks if you're not spamming
+    ↓
+Login check: is your token valid and is your account active?
+    ↓
+Permission check: do you have access to this action?
+    ↓
+Input validation: is the data formatted correctly?
+    ↓
+Controller reads the request
+    ↓
+Service layer runs the business logic
+    ↓
+Sequelize queries the database
+    ↓
+Response is formatted and sent back
+    ↓
+If anything breaks, the error handler catches it and sends a nice error message
 ```
 
 ---
@@ -276,13 +265,13 @@ The API is deployed on Render:
 
 **Base URL:** `https://finauth-qu3g.onrender.com`
 
-> Note: this runs on Render's free tier, so the instance spins down after inactivity. The first request after a cold start may take 30–50 seconds. Subsequent requests are normal speed.
+> Note: this runs on Render's free tier, To avoid cold-start delays on the free tier,I used UptimeRobot (free) to ping the API every 5 minutes. This keeps the instance warm and ready for instant responses.
 
 ![Render Deployment](./Img/render-deployment.png)
 
 ---
 
-## Interactive Docs (Swagger)
+## Api Documentation (Swagger)
 
 Two ways to access the Swagger UI:
 
@@ -302,5 +291,5 @@ The Swagger UI covers all endpoints with request/response schemas and lets you a
 ```bash
 npm run dev    # nodemon — auto-restart on file changes
 npm start      # production start
-npm test       # jest --runInBand --forceExit
+npm test       # jest 
 ```
