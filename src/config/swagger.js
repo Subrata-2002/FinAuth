@@ -69,7 +69,7 @@ const options = {
             amount: { type: 'string', example: '45000.0000' },
             type: { type: 'string', enum: ['income', 'expense'] },
             category: { type: 'string', example: 'salary' },
-            date: { type: 'string', format: 'date', example: '2026-04-03' },
+            date: { type: 'string', format: 'date', example: '2026-03-30' },
             description: { type: 'string', example: 'Monthly salary for march' },
           },
         },
@@ -269,7 +269,7 @@ const options = {
           parameters: [
             { in: 'query', name: 'type', schema: { type: 'string', enum: ['income', 'expense'] } },
             { in: 'query', name: 'category', schema: { type: 'string', example: 'food' } },
-            { in: 'query', name: 'startDate', schema: { type: 'string', format: 'date', example: '2026-04-01' } },
+            { in: 'query', name: 'startDate', schema: { type: 'string', format: 'date', example: '2026-03-01' } },
             { in: 'query', name: 'endDate', schema: { type: 'string', format: 'date', example: '2026-03-30' } },
             { in: 'query', name: 'page', schema: { type: 'integer', default: 1 } },
             { in: 'query', name: 'limit', schema: { type: 'integer', default: 10, maximum: 100 } },
@@ -307,7 +307,7 @@ const options = {
                     amount: { type: 'number', example: 45000.00 },
                     type: { type: 'string', enum: ['income', 'expense'] },
                     category: { type: 'string', example: 'salary' },
-                    date: { type: 'string', format: 'date', example: '2026-04-01' },
+                    date: { type: 'string', format: 'date', example: '2026-03-30' },
                     description: { type: 'string', example: 'Monthly salary for March' },
                   },
                 },
@@ -361,7 +361,7 @@ const options = {
                   example: {
                     success: true,
                     message: 'Record updated successfully',
-                    data: { id: 'uuid', amount: '45500.0000', type: 'income', category: 'salary', date: '2026-04-01', description: 'Adjusted monthly salary', updatedBy: 'admin-uuid', updatedAt: '2026-04-02T10:15:00Z' },
+                    data: { id: 'uuid', amount: '45500.0000', type: 'income', category: 'salary', date: '2026-03-31', description: 'Adjusted monthly salary', updatedBy: 'admin-uuid', updatedAt: '2026-03-31T10:15:00Z' },
                   },
                 },
               },
@@ -389,7 +389,7 @@ const options = {
           tags: ['Dashboard'],
           summary: 'Financial summary — total income, expenses, net balance',
           parameters: [
-            { in: 'query', name: 'month', schema: { type: 'string', example: '2026-04' }, description: 'Filter by month (YYYY-MM). Omit for all-time.' },
+            { in: 'query', name: 'month', schema: { type: 'string', example: '2026-02' }, description: 'Filter by month (YYYY-MM). Omit for all-time.' },
           ],
           responses: {
             200: {
