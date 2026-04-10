@@ -3,7 +3,7 @@
 A role-based REST API for tracking company finances. Built with Node.js, Express.js, PostgreSQL (Sequelize), and Redis.
 
 ---
-## 📌 Overview
+##  Overview
 
 - Track income & expenses
 - Manage users with role-based access (Admin, Analyst, Viewer)
@@ -106,8 +106,6 @@ At the root of the project, create a file called .env and paste this in (fill in
 NODE_ENV=development
 PORT=3000
 
-# Database setup — use either DATABASE_URL OR the individual vars below
-# If you have a cloud database URL, uncomment and use it instead
 # DATABASE_URL=postgresql://user:password@host/dbname
 DB_HOST=127.0.0.1
 DB_PORT=5432
@@ -115,19 +113,19 @@ DB_NAME=fdb
 DB_USER=postgres
 DB_PASSWORD=postgres
 
-# JWT
+
 JWT_SECRET=change_this_to_a_long_random_string
 JWT_EXPIRES_IN=7d
 
-# The first admin account created automatically
+
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 
-# Upstash Redis — get these from Upstash console
+
 UPSTASH_REDIS_REST_URL=https://your-instance.upstash.io
 UPSTASH_REDIS_REST_TOKEN=your_token_here
 
-# Rate limiting (these are the defaults, override as needed)
+
 LOGIN_RATE_LIMIT_MAX=5
 LOGIN_RATE_LIMIT_WINDOW=15 m
 GENERAL_RATE_LIMIT_MAX=100
@@ -137,10 +135,9 @@ GENERAL_RATE_LIMIT_WINDOW=1 m
 ### Step 3: Start it up
 
 ```bash
-# Development (auto-restarts + schema auto-sync)
+
 npm run dev
 
-# Production mode
 npm start
 ```
 
@@ -289,7 +286,7 @@ The Swagger UI covers all endpoints with request/response schemas and lets you a
 ## Scripts
 
 ```bash
-npm run dev    # nodemon — auto-restart on file changes
-npm start      # production start
-npm test       # jest 
+npm run dev    
+npm start      
+npm test      
 ```
